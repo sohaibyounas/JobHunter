@@ -91,8 +91,8 @@ export default function CareerTimeline() {
   // Extract all timeline events sorted chronologically
   const timelineEvents = useMemo(() => {
     const list = [];
-    tracked.forEach((item) => {
-      (item.history || []).forEach((h) => {
+    (tracked || []).forEach((item) => {
+      (item?.history || []).forEach((h) => {
         list.push({
           id: `${item.id}-${h.status}-${h.at}`,
           status: h.status,
@@ -121,23 +121,27 @@ export default function CareerTimeline() {
     Math.round((Date.now() - earliestDate.getTime()) / 86_400_000),
   );
 
-  const totalApplied = tracked.filter((t) =>
-    (t.history || []).some((h) => h.status === "applied"),
+  const totalApplied = (tracked || []).filter((t) =>
+    (t?.history || []).some((h) => h.status === "applied"),
   ).length;
 
-  const totalInterviews = tracked.filter(
+  const totalInterviews = (tracked || []).filter(
     (t) =>
-      t.status === "interview" ||
-      (t.history || []).some((h) => h.status === "interview"),
+      t && (t.status === "interview" ||
+      (t?.history || []).some((h) => h.status === "interview")),
   ).length;
 
   const interviewRate = totalApplied
     ? Math.round((totalInterviews / totalApplied) * 100)
     : 0;
 
-  const unlockedCount = ACHIEVEMENTS.filter((a) =>
-    a.unlockedWhen({ tracked, contacts, rankedJobs }),
-  ).length;
+  const unlockedCount = ACHIEVEMENTS.filter((a) => {
+    try {
+      return a.unlockedWhen({ tracked: tracked || [], contacts: contacts || [], rankedJobs: rankedJobs || [] });
+    } catch {
+      return false;
+    }
+  }).length;
 
   return (
     <Box sx={{ pb: 4 }}>

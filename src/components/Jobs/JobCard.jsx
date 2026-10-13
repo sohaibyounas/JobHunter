@@ -26,6 +26,7 @@ import CompanyLogo from '../Common/CompanyLogo';
 import { useApp } from '../../context/AppContext';
 
 function JobCard({ job, trackedItem, hidden, onOpen, onSave, onApply, onHide, onUnhide }) {
+  if (!job) return null;
   const { openCopilot } = useApp();
   const saved = trackedItem?.status === 'saved';
   const applied = trackedItem && trackedItem.status !== 'saved';

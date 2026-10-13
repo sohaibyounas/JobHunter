@@ -90,10 +90,10 @@ const NEGOTIATION_SCRIPTS = [
 export default function SalaryInsights() {
   const { profile, notify } = useApp();
   const [selectedRole, setSelectedRole] = useState(
-    profile.preferences?.roles?.[0] || 'Frontend Developer'
+    profile?.preferences?.roles?.[0] || 'Frontend Developer'
   );
   const [experienceLevel, setExperienceLevel] = useState(
-    profile.preferences?.level || 'Senior'
+    profile?.preferences?.level || 'Senior'
   );
   const [tab, setTab] = useState(0);
 
@@ -108,7 +108,7 @@ export default function SalaryInsights() {
     p90: 250,
   };
 
-  const userMin = profile.preferences?.salaryMin || 130;
+  const userMin = profile?.preferences?.salaryMin || 130;
   const userPercentile = useMemo(() => {
     if (userMin <= roleData.p10) return 10;
     if (userMin <= roleData.p25) return 25;

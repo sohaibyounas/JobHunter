@@ -91,13 +91,13 @@ export default function SkillsGap() {
   // Aggregated in-demand skills from all ranked jobs
   const marketDemand = useMemo(() => {
     const counts = {};
-    rankedJobs.forEach((j) => {
-      (j.skills || []).forEach((s) => {
+    (rankedJobs || []).forEach((j) => {
+      (j?.skills || []).forEach((s) => {
         counts[s] = (counts[s] || 0) + 1;
       });
     });
 
-    const totalJobs = Math.max(1, rankedJobs.length);
+    const totalJobs = Math.max(1, (rankedJobs || []).length);
     return Object.entries(counts)
       .map(([name, count]) => ({
         name,
@@ -108,8 +108,8 @@ export default function SkillsGap() {
   }, [rankedJobs]);
 
   const userSkillsSet = useMemo(
-    () => new Set((profile.skills || []).map((s) => s.toLowerCase())),
-    [profile.skills]
+    () => new Set((profile?.skills || []).map((s) => s.toLowerCase())),
+    [profile?.skills]
   );
 
   const matchedSkills = marketDemand.filter((s) =>
@@ -124,7 +124,7 @@ export default function SkillsGap() {
   );
 
   const addSkillToProfile = (skillName) => {
-    const current = profile.skills || [];
+    const current = profile?.skills || [];
     if (!current.some((s) => s.toLowerCase() === skillName.toLowerCase())) {
       updateProfile({ skills: [...current, skillName] });
       notify(`Added "${skillName}" to your profile skills!`);

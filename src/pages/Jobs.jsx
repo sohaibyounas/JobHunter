@@ -83,24 +83,24 @@ export default function Jobs() {
   const counts = useMemo(() => {
     let saved = 0;
     let applied = 0;
-    rankedJobs.forEach((j) => {
-      const t = trackedByJobId.get(j.id);
+    (rankedJobs || []).forEach((j) => {
+      const t = trackedByJobId?.get(j.id);
       if (t?.status === 'saved') saved += 1;
       else if (t) applied += 1;
     });
     return {
-      recommended: rankedJobs.filter((j) => !hiddenJobs.includes(j.id) && !trackedByJobId.has(j.id)).length,
+      recommended: (rankedJobs || []).filter((j) => !(hiddenJobs || []).includes(j.id) && !trackedByJobId?.has(j.id)).length,
       saved: Math.max(1, saved),
       applied: Math.max(17, applied),
       external: 7,
-      hidden: hiddenJobs.length,
+      hidden: (hiddenJobs || []).length,
     };
   }, [rankedJobs, trackedByJobId, hiddenJobs]);
 
   const visible = useMemo(() => {
-    return rankedJobs.filter((j) => {
-      const t = trackedByJobId.get(j.id);
-      const isHidden = hiddenJobs.includes(j.id);
+    return (rankedJobs || []).filter((j) => {
+      const t = trackedByJobId?.get(j.id);
+      const isHidden = (hiddenJobs || []).includes(j.id);
       if (tab === 'recommended' && (isHidden || t)) return false;
       if (tab === 'saved' && t?.status !== 'saved') return false;
       if (tab === 'applied' && (!t || t.status === 'saved')) return false;
@@ -462,7 +462,7 @@ export default function Jobs() {
                 AI Job Matcher Active
               </Typography>
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
-                Matching against your verified profile: <b>{profile.title || 'Senior Frontend Developer'}</b> ({profile.skills?.length || 10} skills).
+                Matching against your verified profile: <b>{profile?.title || 'Senior Frontend Developer'}</b> ({profile?.skills?.length || 10} skills).
               </Typography>
               <Button
                 size="small"

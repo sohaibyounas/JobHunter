@@ -63,12 +63,12 @@ export default function JobDetailDrawer({ job, open, onClose }) {
   const { trackedByJobId, toggleSaveJob, markApplied, openCopilot, contacts, profile } = useApp();
 
   if (!job) return null;
-  const tracked = trackedByJobId.get(job.id);
+  const tracked = trackedByJobId?.get(job.id);
   const saved = tracked?.status === 'saved';
   const applied = tracked && tracked.status !== 'saved';
   const { match } = job;
-  const insiders = contacts.filter((c) => c.company.toLowerCase() === job.company.toLowerCase());
-  const school = profile.education?.[0]?.school;
+  const insiders = (contacts || []).filter((c) => c?.company && job?.company && c.company.toLowerCase() === job.company.toLowerCase());
+  const school = profile?.education?.[0]?.school;
   const alumniCount = (job.id * 7) % 9 + 2; // deterministic demo number
 
   const go = (to) => {

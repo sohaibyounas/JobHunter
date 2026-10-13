@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  AppBar, Avatar, Badge, Box, Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography,
+  AppBar, Avatar, Badge, Box, Button, Chip, Divider, IconButton, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
@@ -18,15 +18,15 @@ function useNotifications() {
   const { contacts, rankedJobs, tracked, hiddenJobs, trackedByJobId } = useApp();
   return useMemo(() => {
     const list = [];
-    contacts
-      .filter((c) => c.followUp && new Date(c.followUp) <= new Date() && c.status !== 'meeting')
+    (contacts || [])
+      .filter((c) => c && c.followUp && new Date(c.followUp) <= new Date() && c.status !== 'meeting')
       .forEach((c) => list.push({ id: `f-${c.id}`, icon: <EventRounded />, color: '#f59e0b', title: `Follow up with ${c.name}`, body: `${c.role} at ${c.company}`, to: '/networking' }));
-    const fresh = rankedJobs.filter((j) => j.daysAgo === 0 && !hiddenJobs.includes(j.id) && !trackedByJobId.has(j.id));
+    const fresh = (rankedJobs || []).filter((j) => j && j.daysAgo === 0 && !(hiddenJobs || []).includes(j.id) && !trackedByJobId?.has(j.id));
     if (fresh.length) {
       list.push({ id: 'new-jobs', icon: <WorkRounded />, color: '#6366f1', title: `${fresh.length} new job match${fresh.length > 1 ? 'es' : ''} today`, body: fresh.map((j) => j.company).join(', '), to: '/jobs' });
     }
-    tracked
-      .filter((t) => t.status === 'offer')
+    (tracked || [])
+      .filter((t) => t && t.status === 'offer')
       .forEach((t) => list.push({ id: `o-${t.id}`, icon: <EmojiEventsRounded />, color: '#10b981', title: `Offer from ${t.company}`, body: `Updated ${timeAgo(t.updatedAt)}`, to: '/tracker' }));
     return list;
   }, [contacts, rankedJobs, tracked, hiddenJobs, trackedByJobId]);

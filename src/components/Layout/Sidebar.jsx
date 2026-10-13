@@ -95,8 +95,8 @@ function SidebarContent({ collapsed, onToggleCollapse, onNavigate, onClose, isMo
   const strength = profileStrength(profile, tracked.length, contacts.length);
 
   const badges = {
-    jobs: rankedJobs.filter((j) => j.daysAgo <= 1 && !hiddenJobs.includes(j.id) && !trackedByJobId.has(j.id)).length,
-    followups: contacts.filter((c) => c.followUp && new Date(c.followUp) <= new Date() && c.status !== 'meeting').length,
+    jobs: (rankedJobs || []).filter((j) => j && (j.daysAgo ?? 99) <= 1 && !(hiddenJobs || []).includes(j.id) && !trackedByJobId?.has(j.id)).length,
+    followups: (contacts || [])?.filter((c) => c && c.followUp && new Date(c.followUp) <= new Date() && c.status !== 'meeting').length || 0,
   };
 
   return (

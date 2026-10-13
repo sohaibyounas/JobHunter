@@ -27,8 +27,16 @@ export function AppProvider({ children }) {
   const [copilot, setCopilot] = useState({ open: false, prompt: '' });
   const [toast, setToast] = useState({ open: false, message: '', severity: 'success', key: 0 });
 
+  // ── Defensive state normalization ──
+  const safeProfile = useMemo(() => (profile && typeof profile === 'object' ? profile : defaultProfile), [profile]);
+  const safeTracked = useMemo(() => (Array.isArray(tracked) ? tracked : seedTracked), [tracked]);
+  const safeContacts = useMemo(() => (Array.isArray(contacts) ? contacts : seedContacts), [contacts]);
+  const safeHiddenJobs = useMemo(() => (Array.isArray(hiddenJobs) ? hiddenJobs : []), [hiddenJobs]);
+  const safeSettings = useMemo(() => (settings && typeof settings === 'object' ? settings : defaultSettings), [settings]);
+  const safeInterviewHistory = useMemo(() => (Array.isArray(interviewHistory) ? interviewHistory : []), [interviewHistory]);
+
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)', { noSsr: true });
-  const darkMode = settings.darkMode ?? prefersDark;
+  const darkMode = safeSettings.darkMode ?? prefersDark;
 
   const notify = useCallback((message, severity = 'success') => {
     setToast({ open: true, message, severity, key: Date.now() });
@@ -36,35 +44,35 @@ export function AppProvider({ children }) {
   const closeToast = useCallback(() => setToast((t) => ({ ...t, open: false })), []);
 
   // ── Settings ──
-  const updateSettings = useCallback((patch) => setSettings((s) => ({ ...s, ...patch })), [setSettings]);
+  const updateSettings = useCallback((patch) => setSettings((s) => ({ ...(s || {}), ...patch })), [setSettings]);
   const toggleDarkMode = useCallback(
-    () => setSettings((s) => ({ ...s, darkMode: !(s.darkMode ?? prefersDark) })),
+    () => setSettings((s) => ({ ...(s || {}), darkMode: !(s?.darkMode ?? prefersDark) })),
     [setSettings, prefersDark],
   );
 
   // ── Profile ──
-  const updateProfile = useCallback((patch) => setProfile((p) => ({ ...p, ...patch })), [setProfile]);
+  const updateProfile = useCallback((patch) => setProfile((p) => ({ ...(p || {}), ...patch })), [setProfile]);
 
   // ── Jobs: ranked by explainable match score ──
   const rankedJobs = useMemo(
     () =>
-      jobCatalog
+      (jobCatalog || [])
         .map((job) => ({
           ...job,
-          postedAt: new Date(Date.now() - job.daysAgo * 86_400_000).toISOString(),
-          match: computeMatch(job, profile),
+          postedAt: new Date(Date.now() - (job.daysAgo || 0) * 86_400_000).toISOString(),
+          match: computeMatch(job, safeProfile),
         }))
-        .sort((a, b) => b.match.score - a.match.score),
-    [profile],
+        .sort((a, b) => ((b.match?.score || 0) - (a.match?.score || 0))),
+    [safeProfile],
   );
   const getJob = useCallback((id) => rankedJobs.find((j) => String(j.id) === String(id)), [rankedJobs]);
 
   // ── Tracker ──
   const trackedByJobId = useMemo(() => {
     const map = new Map();
-    tracked.forEach((t) => t.jobId != null && map.set(t.jobId, t));
+    safeTracked.forEach((t) => t?.jobId != null && map.set(t.jobId, t));
     return map;
-  }, [tracked]);
+  }, [safeTracked]);
 
   const addTracked = useCallback(
     (item) => {
@@ -156,31 +164,37 @@ export function AppProvider({ children }) {
   // ── Hidden ("not interested") jobs ──
   const hideJob = useCallback(
     (jobId) => {
-      setHiddenJobs((prev) => (prev.includes(jobId) ? prev : [...prev, jobId]));
+      setHiddenJobs((prev) => (Array.isArray(prev) ? (prev.includes(jobId) ? prev : [...prev, jobId]) : [jobId]));
       notify('Job hidden. We will show you fewer like it.', 'info');
     },
     [setHiddenJobs, notify],
   );
-  const unhideJob = useCallback((jobId) => setHiddenJobs((prev) => prev.filter((id) => id !== jobId)), [setHiddenJobs]);
+  const unhideJob = useCallback(
+    (jobId) => setHiddenJobs((prev) => (Array.isArray(prev) ? prev.filter((id) => id !== jobId) : [])),
+    [setHiddenJobs],
+  );
 
   // ── Contacts ──
   const saveContact = useCallback(
     (contact) => {
       if (contact.id) {
-        setContacts((prev) => prev.map((c) => (c.id === contact.id ? { ...c, ...contact } : c)));
+        setContacts((prev) => (Array.isArray(prev) ? prev.map((c) => (c.id === contact.id ? { ...c, ...contact } : c)) : [contact]));
         return contact;
       }
       const created = { ...contact, id: uid('c') };
-      setContacts((prev) => [created, ...prev]);
+      setContacts((prev) => [created, ...(Array.isArray(prev) ? prev : [])]);
       return created;
     },
     [setContacts],
   );
-  const removeContact = useCallback((id) => setContacts((prev) => prev.filter((c) => c.id !== id)), [setContacts]);
+  const removeContact = useCallback(
+    (id) => setContacts((prev) => (Array.isArray(prev) ? prev.filter((c) => c.id !== id) : [])),
+    [setContacts],
+  );
 
   // ── Interviews ──
   const addInterviewResult = useCallback(
-    (result) => setInterviewHistory((prev) => [{ id: uid('iv'), at: new Date().toISOString(), ...result }, ...prev].slice(0, 50)),
+    (result) => setInterviewHistory((prev) => [{ id: uid('iv'), at: new Date().toISOString(), ...result }, ...(Array.isArray(prev) ? prev : [])].slice(0, 50)),
     [setInterviewHistory],
   );
 
@@ -200,27 +214,27 @@ export function AppProvider({ children }) {
   }, [setProfile, setTracked, setContacts, setHiddenJobs, setSettings, setInterviewHistory, notify]);
 
   const exportData = useCallback(
-    () => JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), profile, tracked, contacts, settings, interviewHistory }, null, 2),
-    [profile, tracked, contacts, settings, interviewHistory],
+    () => JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), profile: safeProfile, tracked: safeTracked, contacts: safeContacts, settings: safeSettings, interviewHistory: safeInterviewHistory }, null, 2),
+    [safeProfile, safeTracked, safeContacts, safeSettings, safeInterviewHistory],
   );
 
   const value = useMemo(
     () => ({
-      profile, updateProfile,
+      profile: safeProfile, updateProfile,
       rankedJobs, getJob,
-      tracked, trackedByJobId, addTracked, updateTracked, removeTracked, toggleSaveJob, markApplied,
-      hiddenJobs, hideJob, unhideJob,
-      contacts, saveContact, removeContact,
-      interviewHistory, addInterviewResult,
-      settings, updateSettings, darkMode, toggleDarkMode,
+      tracked: safeTracked, trackedByJobId, addTracked, updateTracked, removeTracked, toggleSaveJob, markApplied,
+      hiddenJobs: safeHiddenJobs, hideJob, unhideJob,
+      contacts: safeContacts, saveContact, removeContact,
+      interviewHistory: safeInterviewHistory, addInterviewResult,
+      settings: safeSettings, updateSettings, darkMode, toggleDarkMode,
       copilot, openCopilot, closeCopilot,
       toast, notify, closeToast,
       resetAllData, exportData,
     }),
     [
-      profile, updateProfile, rankedJobs, getJob, tracked, trackedByJobId, addTracked, updateTracked, removeTracked,
-      toggleSaveJob, markApplied, hiddenJobs, hideJob, unhideJob, contacts, saveContact, removeContact,
-      interviewHistory, addInterviewResult, settings, updateSettings, darkMode, toggleDarkMode, copilot,
+      safeProfile, updateProfile, rankedJobs, getJob, safeTracked, trackedByJobId, addTracked, updateTracked, removeTracked,
+      toggleSaveJob, markApplied, safeHiddenJobs, hideJob, unhideJob, safeContacts, saveContact, removeContact,
+      safeInterviewHistory, addInterviewResult, safeSettings, updateSettings, darkMode, toggleDarkMode, copilot,
       openCopilot, closeCopilot, toast, notify, closeToast, resetAllData, exportData,
     ],
   );

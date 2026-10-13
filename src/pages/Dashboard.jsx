@@ -112,25 +112,25 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { profile, tracked, rankedJobs, hiddenJobs, trackedByJobId, contacts, settings } = useApp();
 
-  const count = (id) => tracked.filter((t) => t.status === id).length;
-  const topMatches = rankedJobs.filter((j) => !hiddenJobs.includes(j.id) && !trackedByJobId.has(j.id)).slice(0, 4);
-  const newToday = rankedJobs.filter((j) => j.daysAgo === 0 && !hiddenJobs.includes(j.id)).length;
-  const strength = profileStrength(profile, tracked.length, contacts.length);
+  const count = (id) => (tracked || []).filter((t) => t && t.status === id).length;
+  const topMatches = (rankedJobs || []).filter((j) => j && !(hiddenJobs || []).includes(j.id) && !trackedByJobId?.has(j.id)).slice(0, 4);
+  const newToday = (rankedJobs || []).filter((j) => j && j.daysAgo === 0 && !(hiddenJobs || []).includes(j.id)).length;
+  const strength = profileStrength(profile, (tracked || []).length, (contacts || []).length);
 
   const weekAgo = Date.now() - 7 * 86_400_000;
-  const appliedThisWeek = tracked.filter((t) => (t.history || []).some((h) => h.status === 'applied' && new Date(h.at).getTime() >= weekAgo)).length;
-  const goal = Math.max(1, settings.weeklyGoal || 10);
+  const appliedThisWeek = (tracked || []).filter((t) => (t?.history || []).some((h) => h.status === 'applied' && new Date(h.at).getTime() >= weekAgo)).length;
+  const goal = Math.max(1, settings?.weeklyGoal || 10);
   const goalPct = Math.min(100, Math.round((appliedThisWeek / goal) * 100));
 
-  const followUps = contacts
-    .filter((c) => c.followUp && c.status !== 'meeting')
+  const followUps = (contacts || [])
+    .filter((c) => c && c.followUp && c.status !== 'meeting')
     .map((c) => ({ ...c, due: daysUntil(c.followUp) }))
     .filter((c) => c.due !== null && c.due <= 3)
     .sort((a, b) => a.due - b.due)
     .slice(0, 4);
 
-  const activity = tracked
-    .flatMap((t) => (t.history || []).map((h) => ({ ...h, item: t })))
+  const activity = (tracked || [])
+    .flatMap((t) => (t?.history || []).map((h) => ({ ...h, item: t })))
     .sort((a, b) => new Date(b.at) - new Date(a.at))
     .slice(0, 6);
 

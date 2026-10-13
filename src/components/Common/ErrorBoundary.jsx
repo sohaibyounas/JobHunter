@@ -32,12 +32,29 @@ export default class ErrorBoundary extends React.Component {
           <Typography variant="h4" gutterBottom>
             {isChunkError ? 'A new version is available' : 'Something went wrong'}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {isChunkError
               ? 'The app was updated while you were using it. Reload to get the latest version.'
               : 'This section hit an unexpected error. Your data is safe. Try again, or reload the page.'}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+          {this.state.error?.message && (
+            <Typography
+              color="error"
+              sx={{
+                mb: 2,
+                p: 1.5,
+                bgcolor: 'rgba(239,68,68,0.1)',
+                borderRadius: 2,
+                fontFamily: 'monospace',
+                fontSize: '0.8rem',
+                textAlign: 'left',
+                wordBreak: 'break-word',
+              }}
+            >
+              {String(this.state.error.message)}
+            </Typography>
+          )}
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap' }}>
             {!isChunkError && (
               <Button variant="outlined" onClick={() => this.setState({ error: null })}>
                 Try again
@@ -45,6 +62,17 @@ export default class ErrorBoundary extends React.Component {
             )}
             <Button variant="contained" onClick={() => window.location.reload()}>
               Reload
+            </Button>
+            <Button
+              variant="text"
+              color="error"
+              size="small"
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+            >
+              Reset Data
             </Button>
           </Box>
         </Box>
