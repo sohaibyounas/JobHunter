@@ -1,0 +1,10 @@
+{
+  "name": "JobHunter AI",
+  "short_name": "JobHunter",
+  "description": "AI job matching, application tracking and career tools.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f8fa",
+  "theme_color": "#4f46e5",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
