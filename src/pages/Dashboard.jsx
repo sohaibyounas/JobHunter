@@ -148,11 +148,11 @@ export default function Dashboard() {
             color: '#fff',
             position: 'relative',
             overflow: 'hidden',
-            background: 'linear-gradient(120deg, #312e81 0%, #4f46e5 45%, #7c3aed 100%)',
+            background: 'linear-gradient(120deg, #04261d 0%, #064e3b 45%, #059669 100%)',
           }}
         >
-          <Box sx={{ position: 'absolute', right: -80, top: -80, width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.18), transparent 70%)' }} />
-          <Box sx={{ position: 'absolute', left: '40%', bottom: -120, width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(168,85,247,.45), transparent 70%)' }} />
+          <Box sx={{ position: 'absolute', right: -80, top: -80, width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,229,153,.25), transparent 70%)' }} />
+          <Box sx={{ position: 'absolute', left: '40%', bottom: -120, width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,.35), transparent 70%)' }} />
           <Box sx={{ position: 'relative', display: 'flex', gap: 3, alignItems: 'center', flexDirection: { xs: 'column', md: 'row' } }}>
             <Box sx={{ flexGrow: 1, width: '100%' }}>
               <Typography variant="body2" sx={{ opacity: 0.8, mb: 0.5 }}>
@@ -166,7 +166,7 @@ export default function Dashboard() {
                 {followUps.length > 0 ? ` and ${followUps.length} follow-up${followUps.length > 1 ? 's are' : ' is'} coming up.` : '.'} Keep the momentum going!
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to="/jobs" variant="contained" endIcon={<ArrowForwardRounded />} sx={{ bgcolor: '#fff', color: '#312e81', backgroundImage: 'none', '&:hover': { bgcolor: '#eef2ff', backgroundImage: 'none' } }}>
+                <Button component={RouterLink} to="/jobs" variant="contained" endIcon={<ArrowForwardRounded />} sx={{ bgcolor: '#00e599', color: '#04261d', fontWeight: 800, backgroundImage: 'none', '&:hover': { bgcolor: '#00cc88', backgroundImage: 'none' } }}>
                   View job matches
                 </Button>
                 <Button component={RouterLink} to="/tracker?new=1" startIcon={<AddRounded />} sx={{ color: '#fff', border: '1px solid rgba(255,255,255,.35)', '&:hover': { bgcolor: 'rgba(255,255,255,.1)' } }}>

@@ -34,24 +34,46 @@ function NavItem({ item, collapsed, badge, onNavigate }) {
         transition: 'background-color .15s, color .15s',
         '&:hover': { bgcolor: 'action.hover', color: 'text.primary' },
         '&.active': {
-          color: 'primary.main',
-          bgcolor: alpha(theme.palette.primary.main, theme.palette.mode === 'dark' ? 0.16 : 0.08),
-          fontWeight: 600,
+          color: '#00e599',
+          bgcolor: alpha('#00e599', theme.palette.mode === 'dark' ? 0.16 : 0.08),
+          fontWeight: 700,
         },
         '&.active .nav-indicator': { opacity: 1 },
       })}
     >
-      <Box className="nav-indicator" sx={{ position: 'absolute', left: -12, top: 10, bottom: 10, width: 3, borderRadius: 3, bgcolor: 'primary.main', opacity: 0, transition: 'opacity .2s' }} />
-      <Badge color="error" variant={collapsed ? 'dot' : 'standard'} badgeContent={badge || 0} invisible={!badge} sx={{ '& .MuiBadge-badge': { display: collapsed ? 'block' : 'none' } }}>
-        <Icon sx={{ fontSize: 21 }} />
-      </Badge>
+      <Box className="nav-indicator" sx={{ position: 'absolute', left: -12, top: 10, bottom: 10, width: 3, borderRadius: 3, bgcolor: '#00e599', opacity: 0, transition: 'opacity .2s' }} />
+      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <Badge color="error" variant={collapsed ? 'dot' : 'standard'} badgeContent={badge || 0} invisible={!badge} sx={{ '& .MuiBadge-badge': { display: collapsed ? 'block' : 'none' } }}>
+          <Icon sx={{ fontSize: 21 }} />
+        </Badge>
+        {item.to === '/interview' && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -6,
+              right: -10,
+              bgcolor: '#ef4444',
+              color: '#ffffff',
+              fontSize: '8px',
+              fontWeight: 900,
+              px: 0.5,
+              py: 0.1,
+              borderRadius: '4px',
+              lineHeight: 1,
+              letterSpacing: 0.5,
+            }}
+          >
+            NEW
+          </Box>
+        )}
+      </Box>
       {!collapsed && (
         <>
           <Box component="span" sx={{ flexGrow: 1, whiteSpace: 'nowrap' }}>
             {item.label}
           </Box>
           {badge > 0 && (
-            <Box component="span" sx={{ fontSize: 11, fontWeight: 700, px: 0.9, py: 0.2, borderRadius: 99, bgcolor: 'primary.main', color: '#fff' }}>
+            <Box component="span" sx={{ fontSize: 11, fontWeight: 700, px: 0.9, py: 0.2, borderRadius: 99, bgcolor: '#00e599', color: '#04271d' }}>
               {badge}
             </Box>
           )}

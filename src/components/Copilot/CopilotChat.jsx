@@ -86,19 +86,24 @@ export function CopilotFab({ hidden, isMobile }) {
               ? `calc(${MOBILE_NAV_HEIGHT + 16}px + env(safe-area-inset-bottom))`
               : 24,
             zIndex: (t) => t.zIndex.speedDial,
-            width: 56,
-            height: 56,
-            border: 0,
-            borderRadius: "18px",
-            cursor: "pointer",
-            color: "#fff",
-            display: "grid",
-            placeItems: "center",
-            background: "linear-gradient(135deg,#6366f1,#a855f7)",
-            boxShadow: "0 12px 32px rgba(99,102,241,.45)",
+            width: 54,
+            height: 54,
+            border: '1px solid',
+            borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(0,229,153,0.3)' : 'rgba(0,0,0,0.08)',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            color: '#00e599',
+            display: 'grid',
+            placeItems: 'center',
+            bgcolor: 'background.paper',
+            boxShadow: '0 8px 28px rgba(0,0,0,.15)',
+            '&:hover': {
+              boxShadow: '0 10px 32px rgba(0,229,153,.35)',
+              transform: 'scale(1.05)',
+            },
           }}
         >
-          <AutoAwesomeRounded />
+          <AutoAwesomeRounded sx={{ fontSize: 28, color: '#00e599' }} />
         </Box>
       )}
     </AnimatePresence>

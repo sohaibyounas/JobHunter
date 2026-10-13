@@ -75,57 +75,72 @@ export default function Header({ isMobile, onMenuClick, onOpenSearch }) {
           </>
         )}
 
-        {/* Search trigger → command palette */}
+        {/* Search trigger → command palette (Pill Style as in CareerFlow) */}
         <Box
           component="button"
           type="button"
           onClick={onOpenSearch}
-          aria-label="Search jobs, pages and actions"
+          aria-label="Search by title or company"
           sx={{
             display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
-            gap: 1,
-            width: 340,
-            height: 40,
-            px: 1.5,
+            gap: 1.25,
+            width: { md: 280, lg: 360 },
+            height: 38,
+            px: 2,
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 2.5,
-            bgcolor: 'background.paper',
+            borderRadius: 99,
+            bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
             color: 'text.secondary',
             font: 'inherit',
-            fontSize: '0.875rem',
+            fontSize: '0.85rem',
             cursor: 'pointer',
-            transition: 'border-color .15s',
-            '&:hover': { borderColor: 'primary.main' },
+            transition: 'border-color .15s, box-shadow .15s',
+            '&:hover': { borderColor: '#00e599', boxShadow: '0 0 0 3px rgba(0,229,153,0.1)' },
           }}
         >
-          <SearchRounded fontSize="small" />
-          <Box component="span" sx={{ flexGrow: 1, textAlign: 'left' }}>
-            Search jobs, tools, pages…
+          <SearchRounded sx={{ fontSize: 18, color: 'text.secondary' }} />
+          <Box component="span" sx={{ flexGrow: 1, textAlign: 'left', color: 'text.disabled' }}>
+            Search by title or company
           </Box>
-          <Box component="kbd" sx={{ fontFamily: 'inherit', fontSize: 11, fontWeight: 600, px: 0.75, py: 0.25, borderRadius: 1, border: '1px solid', borderColor: 'divider', bgcolor: 'background.default' }}>
+          <Box component="kbd" sx={{ fontFamily: 'inherit', fontSize: 10, fontWeight: 700, px: 0.75, py: 0.2, borderRadius: 1, border: '1px solid', borderColor: 'divider', bgcolor: 'background.subtle', color: 'text.disabled' }}>
             {isMac ? '⌘' : 'Ctrl'} K
           </Box>
         </Box>
 
         <Box sx={{ flexGrow: 1 }} />
 
+        {/* Upgrade to Turbo: Get Hired Faster > Button */}
+        <Button
+          onClick={() => navigate('/settings')}
+          size="small"
+          sx={{
+            display: { xs: 'none', sm: 'inline-flex' },
+            borderRadius: 99,
+            px: 2,
+            py: 0.75,
+            fontWeight: 800,
+            fontSize: '0.8125rem',
+            color: '#04271d',
+            background: 'linear-gradient(90deg, #bef264 0%, #10b981 100%)',
+            boxShadow: '0 2px 10px rgba(16,185,129,0.25)',
+            textTransform: 'none',
+            whiteSpace: 'nowrap',
+            '&:hover': {
+              background: 'linear-gradient(90deg, #a3e635 0%, #059669 100%)',
+              boxShadow: '0 4px 14px rgba(16,185,129,0.35)',
+            },
+          }}
+        >
+          ⚡ Upgrade to Turbo: Get Hired Faster &gt;
+        </Button>
+
         <Tooltip title="Search">
           <IconButton onClick={onOpenSearch} aria-label="Search" sx={{ display: { md: 'none' } }}>
             <SearchRounded />
           </IconButton>
         </Tooltip>
-
-        <Button
-          onClick={() => openCopilot()}
-          startIcon={<AutoAwesomeRounded />}
-          variant="outlined"
-          size="small"
-          sx={{ display: { xs: 'none', sm: 'inline-flex' }, borderRadius: 99, px: 1.75, color: 'primary.main', borderColor: (t) => alpha(t.palette.primary.main, 0.4) }}
-        >
-          Ask AI
-        </Button>
 
         <Tooltip title={darkMode ? 'Light mode' : 'Dark mode'}>
           <IconButton onClick={toggleDarkMode} aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
@@ -145,11 +160,60 @@ export default function Header({ isMobile, onMenuClick, onOpenSearch }) {
           </IconButton>
         </Tooltip>
 
-        <IconButton onClick={(e) => setUserAnchor(e.currentTarget)} aria-label="Account menu" aria-haspopup="true" sx={{ p: 0.5, ml: 0.5 }}>
-          <Avatar src={profile.avatar || undefined} sx={{ width: 34, height: 34, fontSize: 14, fontWeight: 700, bgcolor: 'primary.main' }}>
-            {getInitials(profile.name)}
+        {/* User profile with Free Plan tag */}
+        <Box
+          onClick={(e) => setUserAnchor(e.currentTarget)}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.25,
+            p: 0.5,
+            pl: 1,
+            borderRadius: 99,
+            cursor: 'pointer',
+            transition: 'background-color .15s',
+            '&:hover': { bgcolor: 'action.hover' },
+          }}
+        >
+          <Avatar
+            src={profile.avatar || undefined}
+            sx={{
+              width: 32,
+              height: 32,
+              fontSize: 13,
+              fontWeight: 800,
+              bgcolor: '#00e599',
+              color: '#04271d',
+            }}
+          >
+            {getInitials(profile.name || 'S')}
           </Avatar>
-        </IconButton>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              display: { xs: 'none', md: 'block' },
+              fontWeight: 700,
+              fontSize: '0.875rem',
+            }}
+          >
+            {profile.name ? firstName(profile.name) : 'Sohaib'}
+          </Typography>
+          <Chip
+            label="Free Plan"
+            size="small"
+            sx={{
+              display: { xs: 'none', lg: 'inline-flex' },
+              height: 22,
+              fontSize: '0.725rem',
+              fontWeight: 600,
+              bgcolor: 'background.subtle',
+              color: 'text.secondary',
+              borderRadius: 99,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          />
+        </Box>
       </Toolbar>
 
       {/* Notifications */}
